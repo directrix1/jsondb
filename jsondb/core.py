@@ -85,8 +85,8 @@ class Queryable(object):
     def __hash__(self):
         return self.root
 
-    def __len__(self):
-        raise NotImplementedError
+#    def __len__(self):
+#        raise NotImplementedError
 
     def __getattr__(self, name):
         cls = self.get_datatype()

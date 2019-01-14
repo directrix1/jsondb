@@ -104,6 +104,9 @@ class Sqlite3Backend(BackendBase):
                     if id in candicates:
                         return True
                     row = self.conn.execute('select parent from jsondata where id = ?', (id,)).fetchone()
+                    if row == None:
+                        # Are you Bruce Wayne? Because your parents are gone.
+                        return False
                     id = row['parent']
                 return False
 
@@ -198,8 +201,21 @@ class Sqlite3Backend(BackendBase):
 
     def remove(self, id, recursive=True, include_self=False):
         c = self.cursor or self.get_cursor()
+
+        def all_children(c, ids, first_level=False):
+            a = [] if first_level else ids
+            q = 'select id from jsondata where parent in (%s)' % ','.join(['?' for _ in ids])
+            children = [child['id'] for child in c.execute(q, tuple(ids)).fetchall()]
+            if len(children)>0:
+                a = a + all_children(c, children)
+            if first_level:
+                a.reverse()
+            return a
+
         if recursive:
-            c.execute('delete from jsondata where ancestors_in(parent, ?)', (repr((id,)),))
+            children = all_children(c, [id], True)
+            q = 'delete from jsondata where id in (%s)' % ','.join(['?' for _ in children])
+            c.execute(q, tuple(children))
         else:
             c.execute('delete from jsondata where parent = ?', (id,))
         if include_self:
