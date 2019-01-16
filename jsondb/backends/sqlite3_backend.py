@@ -202,20 +202,15 @@ class Sqlite3Backend(BackendBase):
     def remove(self, id, recursive=True, include_self=False):
         c = self.cursor or self.get_cursor()
 
-        def all_children(c, ids, first_level=False):
-            a = [] if first_level else ids
-            q = 'select id from jsondata where parent in (%s)' % ','.join(['?' for _ in ids])
-            children = [child['id'] for child in c.execute(q, tuple(ids)).fetchall()]
-            if len(children)>0:
-                a = a + all_children(c, children)
-            if first_level:
-                a.reverse()
-            return a
+        def kill_children_of(id, c):
+            children = [child['id'] for child in c.execute('select id from jsondata where parent = ?', (id,)).fetchall()]
+            if len(children) > 0:
+                for child in children:
+                    kill_children_of(child, c)
+                c.execute('delete from jsondata where parent = ?', (id,))
 
         if recursive:
-            children = all_children(c, [id], True)
-            q = 'delete from jsondata where id in (%s)' % ','.join(['?' for _ in children])
-            c.execute(q, tuple(children))
+            kill_children_of(id, c)
         else:
             c.execute('delete from jsondata where parent = ?', (id,))
         if include_self:
