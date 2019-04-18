@@ -30,16 +30,14 @@ DATA_TYPE_NAME = {
 }
 
 TYPE_MAP = {
-    types.IntType     : INT,
-    types.LongType    : INT,
-    types.FloatType   : FLOAT,
-    types.StringType  : STR,
-    types.UnicodeType : UNICODE,
-    types.BooleanType : BOOL,
-    types.NoneType    : NIL,
-    types.ListType    : LIST,
-    types.TupleType   : LIST,
-    types.DictType    : DICT,
+    int               : INT,
+    float             : FLOAT,
+    str               : UNICODE,
+    bool              : BOOL,
+    type(None)        : NIL,
+    list              : LIST,
+    tuple             : LIST,
+    dict              : DICT,
 }
 
 

@@ -4,10 +4,9 @@
 
 import re
 import sys, codecs
-import exceptions
 
-class keyword(unicode): pass
-class code(unicode): pass
+class keyword(str): pass
+class code(str): pass
 class ignore(object):
     def __init__(self, regex_text, *args):
         self.regex = re.compile(regex_text, *args)
@@ -18,7 +17,7 @@ class _and(object):
 
 class _not(_and): pass
 
-class Name(unicode):
+class Name(str):
     def __init__(self, *args):
         self.line = 0
         self.file = u""
@@ -31,27 +30,27 @@ class Symbol(list):
         self.append(what)
     def __call__(self):
         return self.what
-    def __unicode__(self):
+    def __str__(self):
         return u'Symbol(' + repr(self.__name__) + ', ' + repr(self.what) + u')'
     def __repr__(self):
-        return unicode(self)
+        return str(self)
 
-word_regex = re.compile(ur"\w+")
-rest_regex = re.compile(ur".*")
+word_regex = re.compile("\\w+")
+rest_regex = re.compile(".*")
 
 print_trace = False
 
 def u(text):
-    if isinstance(text, exceptions.BaseException):
+    if isinstance(text, BaseException):
         text = text.args[0]
-    if type(text) is unicode:
+    if type(text) is str:
         return text
     if isinstance(text, str):
         if sys.stdin.encoding:
             return codecs.decode(text, sys.stdin.encoding)
         else:
             return codecs.decode(text, "utf-8")
-    return unicode(text)
+    return str(text)
 
 def skip(skipper, text, skipWS, skipComments):
     if skipWS:
@@ -69,7 +68,7 @@ def skip(skipper, text, skipWS, skipComments):
 
 class parser(object):
     def __init__(self, another = False, p = False):
-        self.restlen = -1 
+        self.restlen = -1
         if not(another):
             self.skipper = parser(True, p)
             self.skipper.packrat = p
@@ -86,7 +85,7 @@ class parser(object):
     #   resultSoFar:    parsing result so far (default: blank list [])
     #   skipWS:         Flag if whitespace should be skipped (default: True)
     #   skipComments:   Python functions returning pyPEG for matching comments
-    #   
+    #
     #   returns:        pyAST, textrest
     #
     #   raises:         SyntaxError(reason) if textline is detected not being in language
@@ -160,7 +159,7 @@ class parser(object):
 
         pattern_type = type(pattern)
 
-        if pattern_type is str or pattern_type is unicode:
+        if pattern_type is str or pattern_type is str:
             if text[:len(pattern)] == pattern:
                 text = skip(self.skipper, text[len(pattern):], skipWS, skipComments)
                 return R(None, text)
@@ -296,7 +295,7 @@ def parseLine(textline, pattern, resultSoFar = [], skipWS = True, skipComments =
 #   skipComments:   Python function which returns pyPEG for matching comments
 #   packrat:        use memoization
 #   lineCount:      add line number information to AST
-#   
+#
 #   returns:        pyAST
 #
 #   raises:         SyntaxError(reason), if a parsed line is not in language
@@ -331,7 +330,7 @@ def parse(language, lineSource, skipWS = True, skipComments = None, packrat = Fa
         if text:
             raise SyntaxError()
 
-    except SyntaxError, msg:
+    except SyntaxError as msg:
         parsed = textlen - p.restlen
         textlen = 0
         nn, lineNo, file = 0, 0, u""

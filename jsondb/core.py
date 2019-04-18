@@ -21,11 +21,11 @@ try:
 except:
     import json
 
-from datatypes import *
-import backends
-import jsonquery
+from .datatypes import *
+from . import backends
+from . import jsonquery
 
-from error import *
+from .error import *
 
 
 class Nothing:
@@ -135,7 +135,7 @@ class Queryable(object):
         """
         if isinstance(key, bool):
             raise UnsupportedOperation
-        elif isinstance(key, basestring):
+        elif isinstance(key, str):
             if not key.startswith('$'):
                 key = '$.%s' % key
         elif isinstance(key, (int, long)):
@@ -152,7 +152,7 @@ class Queryable(object):
 
     def from_file(self, f):
         """ Load from a json file."""
-        if isinstance(f, basestring):
+        if isinstance(f, str):
             f = open(f, 'rd')
 
         data = json.load(f)
@@ -194,10 +194,10 @@ class Queryable(object):
             elif parent_type in (LIST, KEY):
                 hash_id = self.backend.insert((parent_id, _type, 0,))
             elif parent_id != self.root:
-                print parent_id, parent_type
+                print(parent_id, parent_type)
                 raise IllegalTypeError('Parent node should be either DICT or LIST.')
 
-            for key, value in data.iteritems():
+            for key, value in data.items():
                 if key == self.link_key:
                     self.backend.update_link(hash_id, value)
                     continue
@@ -323,7 +323,7 @@ class Queryable(object):
             for x in data:
                 self.feed(x)
         elif new_type == DICT:
-            for k, v in data.iteritems():
+            for k, v in data.items():
                 self.feed({k: v})
         else:
             self.backend.set_value(self.root, data)
@@ -505,7 +505,7 @@ class DictQueryable(SequenceQueryable):
     def items(self):
         return self.data().items()
 
-    def iteritems(self):
+    def items(self):
         for key, value_row in self.backend.iter_dict(self.root):
             yield key, self._make(value_row.id, value_row.type).data()
 

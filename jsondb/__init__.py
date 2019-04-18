@@ -11,10 +11,10 @@ try:
 except:
     import json
 
-import core
-from datatypes import *
-import backends
-from error import *
+from . import core
+from .datatypes import *
+from . import backends
+from .error import *
 
 
 class BaseDB:
@@ -37,7 +37,7 @@ class BaseDB:
 
     def dumprows(self):
         for row in self.backend.dumprows():
-            print row
+            print(row)
 
 
 def get_class(datatype):
@@ -81,7 +81,7 @@ def create(data={}, url=None, overwrite=True, link_key=None, **kws):
     self.backend.insert_root((root_type, root))
 
     if root_type == DICT:
-        for k, v in data.iteritems():
+        for k, v in data.items():
             self.feed({k: v})
     elif root_type == LIST:
         for x in data:
@@ -111,7 +111,7 @@ def load(url, **kws):
 
 def from_file(file, url=None, **kws):
     """Create a new db from json file"""
-    if isinstance(file, basestring):
+    if isinstance(file, str):
         fileobj = open(file)
     else:
         fileobj = file

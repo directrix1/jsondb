@@ -53,7 +53,7 @@ class Sqlite3Backend(BackendBase):
         return os.path.normpath(self.dbpath)
 
     def get_url(self):
-        return unicode(self.url)
+        return str(self.url)
 
     def create_tables(self):
         conn = self.get_connection()
@@ -222,7 +222,8 @@ class Sqlite3Backend(BackendBase):
     def get_link_key(self):
         return self.get_settings('link_key')
 
-    def insert_root(self, (root_type, value)):
+    def insert_root(self, r):
+        (root_type, value) = r
         c = self.cursor or self.get_cursor()
         conn = self.conn or self.get_connection()
         c.execute(SQL_INSERT_ROOT, (root_type, value))

@@ -1,6 +1,6 @@
 # coding: utf8
 
-from urlparse import urlparse, urlunsplit
+from urllib.parse import urlparse, urlunsplit
 from jsondb.util import IS_WINDOWS
 
 
@@ -18,7 +18,7 @@ class URL(object):
         self.port = int(port) if port else None
         self.database = database
 
-    def __unicode__(self):
+    def __str__(self):
         auth = '%s%s%s' % (self.username or '', ':' if (self.username or self.password) else '', self.password or '')
         host = '%s%s%s' % (self.host or '', ':' if (self.host or self.port) else '', self.port or '')
         netloc = '%s%s%s' % (auth, '@' if auth else '', host)
@@ -28,13 +28,13 @@ class URL(object):
         return urlunsplit(parts)
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return str(self).encode('utf-8')
 
     @classmethod
     def parse(cls, url):
         if IS_WINDOWS:
             url = url.replace('\\', '/')
-        if isinstance(url, basestring):
+        if isinstance(url, str):
             url = urlparse(url)
         database = url.path
         if IS_WINDOWS and database.startswith('/'):

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import re
-import pyPEG
-from pyPEG import parseLine 
-from pyPEG import Symbol, keyword, _and, _not
+from . import pyPEG
+from .pyPEG import parseLine
+from .pyPEG import Symbol, keyword, _and, _not
 
 __all__ = ['parse']
 
@@ -65,7 +65,7 @@ def unquote(string):
 
 def cst2json(cst):
     # FIXME: Rewrite this later.
-    if isinstance(cst, unicode) or isinstance(cst, str):
+    if isinstance(cst, str) or isinstance(cst, str):
         return cst
 
     if type(cst) is Symbol:
@@ -78,7 +78,7 @@ def cst2json(cst):
                 if e.__name__ == 'tag':
                     d = {}
                     for child in e.what:
-                        if isinstance(child, basestring):
+                        if isinstance(child, str):
                             d['name'] = unquote(child)
                         else:
                             d.update(cst2json(child))
@@ -179,7 +179,7 @@ def cst2json(cst):
                 }
             }
 
-        elif isinstance(body, basestring):
+        elif isinstance(body, str):
             result = {name: body}
 
         else:
@@ -188,4 +188,3 @@ def cst2json(cst):
         result = [cst2json(e) for e in cst]
 
     return result
-
