@@ -86,7 +86,7 @@ class Sqlite3Backend(BackendBase):
             except:
                 pass
 
-            self.conn = sqlite3.connect(self.dbpath)
+            self.conn = sqlite3.connect(self.dbpath, check_same_thread=False)
             self.conn.row_factory = sqlite3.Row
             self.conn.text_factory = str
             self.conn.execute('PRAGMA encoding = "UTF-8";')
